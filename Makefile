@@ -10,7 +10,10 @@ MAN1DIR=${prefix}/man/man1
 
 EXTRACFLAGS=
 
+HOST_CC ?= cc
+
 $(eval HOST_ARCH = $(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-7]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
+$(eval HOST_CC_ARCH = $(shell $(HOST_CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/'))
 $(eval CC_ARCH = $(shell $(CROSS)$(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/'))
 
 ifeq ($(CC_ARCH),parisc64)
@@ -270,11 +273,22 @@ $(PICODIR)/libm.so: $(DYN_LIBMATH_OBJS) dietfeatures.h $(PICODIR)/libc.so
 
 $(SYSCALLOBJ): syscalls.h
 
-$(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c
+$(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c bin-$(HOST_ARCH)/diet
 	bin-$(HOST_ARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
 
-$(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c
+$(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c bin-$(HOST_ARCH)/diet
 	bin-$(HOST_ARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
+	
+bin-$(HOST_ARCH)/diet:
+ifeq ($(HOST_ARCH),$(HOST_CC_ARCH))
+	make ARCH=$(HOST_ARCH) CROSS= CC=$(HOST_CC)
+else
+ifeq ($(HOST_ARCH)-$(HOST_CC_ARCH),x86_64-i386)
+	make ARCH=$(HOST_ARCH) CROSS= "CC=$(HOST_CC) -m64"
+else
+	make $(HOST_ARCH)
+endif
+endif
 
 VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://')
 CURNAME=$(notdir $(shell pwd))
@@ -373,7 +387,7 @@ uninstall:
 .PHONY: sparc ppc mips arm alpha i386 parisc mipsel powerpc s390 sparc64
 .PHONY: x86_64 ia64 ppc64 s390x
 
-arm sparc alpha mips parisc s390 sparc64 x86_64 ia64 ppc64 s390x:
+arm sparc alpha mips parisc s390 sparc64 ia64 ppc64 s390x:
 	$(MAKE) ARCH=$@ CROSS=$@-linux- all
 
 .PHONY: x32
@@ -387,6 +401,13 @@ endif
 i386:
 ifeq ($(CC_ARCH),x86_64)
 	$(MAKE) ARCH=$@ CC="$(CC) -m32" all
+else
+	$(MAKE) ARCH=$@ CROSS=$@-linux- all
+endif
+
+x86_64:
+ifeq ($(CC_ARCH),i386)
+	$(MAKE) ARCH=$@ CC="$(CC) -m64" all
 else
 	$(MAKE) ARCH=$@ CROSS=$@-linux- all
 endif
