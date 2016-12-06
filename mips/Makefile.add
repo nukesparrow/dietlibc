@@ -10,9 +10,20 @@ ifeq ($(CROSS),mips-linux-)
 ENDIAN=-meb
 endif
 ifeq ($(CC),gcc -mabi=64)
-CFLAGS+=$(ENDIAN) -Os -march=mips64
+CFLAGS+=$(ENDIAN) -Os
 else
-CFLAGS+=$(ENDIAN) -Os -march=mips2
+CFLAGS+=$(ENDIAN) -Os
 endif
+
+ifeq ($(CFLAGS_ARCH),)
+ifeq ($(CC),gcc -mabi=64)
+CFLAGS+=-march=mips64
+else
+CFLAGS+=-march=mips2
+endif
+else
+CFLAGS+=$(CFLAGS_ARCH)
+endif
+
 VPATH:=mips:syscalls.s:$(VPATH)
 LIBOBJ+=$(OBJDIR)/pread64.o $(OBJDIR)/pwrite64.o $(OBJDIR)/divdi3.o $(OBJDIR)/__CAS.o
