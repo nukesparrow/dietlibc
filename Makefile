@@ -10,94 +10,22 @@ MAN1DIR=${prefix}/man/man1
 
 EXTRACFLAGS=
 
-MYARCH:=$(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-7]t\?e\?[lb]/arm/')
+$(eval HOST_ARCH = $(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-7]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
+$(eval CC_ARCH = $(shell $(CROSS)$(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/'))
 
-# This extra-ugly cruft is here so make will not run uname and sed each
-# time it looks at $(OBJDIR).  This alone sped up running make when
-# nothing has to be done from 1 sec to 0.12 sec on a 900 MHz Athlon.
-# We don't use ARCH:=$(MYARCH) so we can detect unknown architectures.
-ifeq ($(MYARCH),i386)
-ARCH=i386
-else
-ifeq ($(MYARCH),mips)
-ARCH=mips
-else
-ifeq ($(MYARCH),alpha)
-ARCH=alpha
-else
-ifeq ($(MYARCH),ppc)
-ARCH=ppc
-else
-ifeq ($(MYARCH),ppc64)
-ARCH=ppc64
-else
-ifeq ($(MYARCH),ppc64le)
-ARCH=ppc64le
-else
-ifeq ($(MYARCH),arm)
-ARCH=arm
-else
-ifeq ($(MYARCH),aarch64)
-ARCH=aarch64
-else
-ifeq ($(MYARCH),sparc)
-ARCH=sparc
-else
-ifeq ($(MYARCH),sparc64)
-ARCH=sparc64
-else
-ifeq ($(MYARCH),s390)
-ARCH=s390
-else
-ifeq ($(MYARCH),s390x)
-ARCH=s390x
-else
-ifeq ($(MYARCH),mipsel)
-ARCH=mipsel
-else
-ifeq ($(MYARCH),mips64)
-ARCH=mips64
-else
-ifeq ($(MYARCH),parisc)
+ifeq ($(CC_ARCH),parisc64)
 ARCH=parisc
+CC_ARCH=parisc
 else
-ifeq ($(MYARCH),parisc64)
-ARCH=parisc
-MYARCH=parisc
-else
-ifeq ($(MYARCH),x86_64)
-ARCH=x86_64
-else
-ifeq ($(MYARCH),ia64)
-ARCH=ia64
-else
-ifeq ($(MYARCH),armeb)
+ifeq ($(CC_ARCH),armeb)
 ARCH=arm
+PIE=-fpie -fvisibility=hidden
 else
-$(error unknown architecture, please fix Makefile)
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
+ARCH=$(CC_ARCH)
 endif
 endif
 
 PIE=-fpie -fvisibility=hidden
-
-# ARCH=$(MYARCH)
 
 OBJDIR=bin-$(ARCH)
 ILIBDIR=$(LIBDIR)-$(ARCH)
@@ -343,10 +271,10 @@ $(PICODIR)/libm.so: $(DYN_LIBMATH_OBJS) dietfeatures.h $(PICODIR)/libc.so
 $(SYSCALLOBJ): syscalls.h
 
 $(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c
-	bin-$(MYARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
+	bin-$(HOST_ARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
 
 $(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c
-	bin-$(MYARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
+	bin-$(HOST_ARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
 
 VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://')
 CURNAME=$(notdir $(shell pwd))
@@ -407,7 +335,7 @@ install-bin: $(OBJDIR)/start.o $(OBJDIR)/dietlibc.a $(OBJDIR)/librpc.a $(OBJDIR)
 	$(INSTALL) -m 644 $(OBJDIR)/libm.a $(OBJDIR)/libpthread.a $(OBJDIR)/librpc.a \
 $(OBJDIR)/liblatin1.a $(OBJDIR)/libcompat.a $(OBJDIR)/libcrypt.a $(DESTDIR)$(ILIBDIR)
 	$(INSTALL) -m 644 $(OBJDIR)/dietlibc.a $(DESTDIR)$(ILIBDIR)/libc.a
-ifeq ($(MYARCH),$(ARCH))
+ifeq ($(HOST_ARCH),$(ARCH))
 	$(INSTALL) $(OBJDIR)/diet-i $(DESTDIR)$(BINDIR)/diet
 	-$(INSTALL) $(PICODIR)/diet-dyn-i $(DESTDIR)$(BINDIR)/diet-dyn
 endif
@@ -450,21 +378,21 @@ arm sparc alpha mips parisc s390 sparc64 x86_64 ia64 ppc64 s390x:
 
 .PHONY: x32
 x32:
-ifeq ($(MYARCH),x86_64)
+ifeq ($(CC_ARCH),x86_64)
 	$(MAKE) ARCH=$@ CC="$(CC) -mx32" all
 else
 	$(MAKE) ARCH=$@ CROSS=x86_64-linux- CC="$(CC) -mx32" all
 endif
 
 i386:
-ifeq ($(MYARCH),x86_64)
+ifeq ($(CC_ARCH),x86_64)
 	$(MAKE) ARCH=$@ CC="$(CC) -m32" all
 else
 	$(MAKE) ARCH=$@ CROSS=$@-linux- all
 endif
 
 ppc:
-ifeq ($(MYARCH),ppc64)
+ifeq ($(CC_ARCH),ppc64)
 	$(MAKE) ARCH=$@ CC="$(CC) -m32" all
 else
 	$(MAKE) ARCH=$@ CROSS=$@-linux- all
