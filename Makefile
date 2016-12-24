@@ -149,6 +149,9 @@ endif
 
 CC+=-D__dietlibc__
 
+dietfeatures.h:
+	./dietfeatures_gen.pl $(FEATURES) > $@
+
 $(OBJDIR)/start-pie.o: start.S | $(OBJDIR)
 	$(CCC) $(INC) $(CCFLAGS) $(EXTRACFLAGS) -c $< $(ASM_CFLAGS) -fpie -o $@
 
@@ -317,6 +320,7 @@ $(OBJDIR)/load:
 	chmod 755 $@
 
 clean:
+	rm -f dietfeatures.h
 	rm -f *.o *.a t t1 compile load elftrunc exports mapfile libdietc.so include/errno_definition.h
 	rm -rf bin-* pic-*
 	$(MAKE) -C examples clean
