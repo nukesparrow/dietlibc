@@ -16,7 +16,7 @@ $(eval HOST_ARCH = $(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-7]t
 $(eval HOST_CC_ARCH = $(shell $(HOST_CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
 $(eval CC_ARCH = $(shell $(CROSS)$(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
 
-ARCH=$(CC_ARCH)
+ARCH?=$(CC_ARCH)
 
 PIE=-fpie -fvisibility=hidden
 
