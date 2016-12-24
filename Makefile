@@ -42,8 +42,13 @@ WHAT=	$(OBJDIR) $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o $(OBJDIR)/dyn_stop.o \
 	$(OBJDIR)/libcompat.a $(OBJDIR)/libm.a \
 	$(OBJDIR)/librpc.a $(OBJDIR)/libpthread.a \
 	$(OBJDIR)/libcrypt.a \
-	$(OBJDIR)/diet $(OBJDIR)/diet-i $(OBJDIR)/elftrunc \
+	$(OBJDIR)/diet $(OBJDIR)/diet-i \
+
+ifeq ($(HOST_ARCH),$(CC_ARCH))
+WHAT +=
+	$(OBJDIR)/elftrunc \
 	$(OBJDIR)/dnsd
+endif
 
 all: $(WHAT)
 
