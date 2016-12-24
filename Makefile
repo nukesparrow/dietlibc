@@ -13,20 +13,10 @@ EXTRACFLAGS=
 HOST_CC ?= cc
 
 $(eval HOST_ARCH = $(shell uname -m | sed -e 's/i[4-9]86/i386/' -e 's/armv[3-7]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
-$(eval HOST_CC_ARCH = $(shell $(HOST_CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/'))
-$(eval CC_ARCH = $(shell $(CROSS)$(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/'))
+$(eval HOST_CC_ARCH = $(shell $(HOST_CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
+$(eval CC_ARCH = $(shell $(CROSS)$(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
 
-ifeq ($(CC_ARCH),parisc64)
-ARCH=parisc
-CC_ARCH=parisc
-else
-ifeq ($(CC_ARCH),armeb)
-ARCH=arm
-PIE=-fpie -fvisibility=hidden
-else
 ARCH=$(CC_ARCH)
-endif
-endif
 
 PIE=-fpie -fvisibility=hidden
 
@@ -35,7 +25,7 @@ suffix?=-$(ARCH)
 OBJDIR=bin$(suffix)
 ILIBDIR=$(LIBDIR)$(suffix)
 
-DIETHOME=$(shell pwd)
+$(eval DIETHOME=$(shell pwd))
 
 WHAT=	$(OBJDIR) $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o $(OBJDIR)/dyn_stop.o \
 	$(OBJDIR)/dietlibc.a $(OBJDIR)/liblatin1.a \
@@ -111,7 +101,7 @@ else
 CCFLAGS=$(CFLAGS)
 endif
 
-PWD=$(shell pwd)
+$(eval PWD=$(shell pwd))
 
 .SUFFIXES:
 .SUFFIXES: .S .c
@@ -150,8 +140,8 @@ endif
 
 
 ifeq ($(shell $(CC) -v 2>&1 | grep "gcc version"),gcc version 4.0.0)
-SAFE_CFLAGS=$(shell echo $(CCFLAGS)|sed 's/-Os/-O2/')
-SAFER_CFLAGS=$(shell echo $(CCFLAGS)|sed 's/-Os/-O/')
+$(eval SAFE_CFLAGS=$(shell echo $(CCFLAGS)|sed 's/-Os/-O2/'))
+$(eval SAFER_CFLAGS=$(shell echo $(CCFLAGS)|sed 's/-Os/-O/'))
 else
 SAFE_CFLAGS=$(CCFLAGS)
 SAFER_CFLAGS=$(CCFLAGS)
@@ -297,8 +287,8 @@ else
 endif
 endif
 
-VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://')
-CURNAME=$(notdir $(shell pwd))
+$(eval VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://'))
+$(eval CURNAME=$(notdir $(shell pwd)))
 
 $(OBJDIR)/diet: $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o diet.c $(OBJDIR)/dietlibc.a $(OBJDIR)/dyn_stop.o
 	$(CCC) -isystem include $(CFLAGS) -nostdlib -o $@ $^ -DDIETHOME=\"$(DIETHOME)\" -DVERSION=\"$(VERSION)\" -lgcc
