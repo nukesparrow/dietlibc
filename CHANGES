@@ -1,3 +1,6 @@
+0.34-nukemod:
+  faster builds with updated Makefile
+  fix Makefile for uculibc.org cross builds
 0.34:
   move stpcpy from libcompat to lib as it is now part of POSIX (Enrico Scholz)
   add linux/seccomp.h linux/prctl.h linux/audit.h linux/elf-em.h linux/filter.h
