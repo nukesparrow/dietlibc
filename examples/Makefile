@@ -1,11 +1,12 @@
 
 #DEBUG ?= 1
 
-$(eval CC_ARCH = $(shell $(CROSS)$(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
+CC = $(DIETPREFIX)diet gcc
+
+$(eval CC_ARCH = $(shell $(CC) -dumpmachine | sed -e 's/-.*//' -e 's/i[4-9]86/i386/' -e 's/armv[3-6]t\?e\?[lb]/arm/' -e 's/parisc64/parisc/'))
 
 DIETPREFIX?=../bin-$(CC_ARCH)/
 
-CC = $(DIETPREFIX)diet $(CROSS)gcc
 CFLAGS += -pipe -Os
 ifeq ($(DEBUG),1)
 CFLAGS += -g
@@ -38,14 +39,14 @@ all: $(EXAMPLES)
 %: %.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@
 ifneq ($(DEBUG),1)
-	$(CROSS)strip --strip-all $@
+	$(CROSS_COMPILE)strip --strip-all $@
 	$(DIETPREFIX)elftrunc $@ $@~ && mv $@~ $@
 endif
 
 %: %.o
 	$(CC) $(LDFLAGS) $(LDLIBS) $^ -o $@
 ifneq ($(DEBUG),1)
-	$(CROSS)strip --strip-all $@
+	$(CROSS_COMPILE)strip --strip-all $@
 	$(DIETPREFIX)elftrunc $@ $@~ && mv $@~ $@
 endif
 
@@ -53,4 +54,4 @@ endif
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean:
-	$(RM) -f $(EXAMPLES)
+	$(RM) -f $(EXAMPLES) *~
