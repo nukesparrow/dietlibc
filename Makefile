@@ -383,7 +383,7 @@ arm sparc alpha mips parisc s390 sparc64 ia64 ppc64 s390x:
 
 .PHONY: mips_rtl819x
 mips_rtl819x:
-	$(MAKE) ARCH=mips suffix=-mips_rtl819x CFLAGS_ARCH=-march=5281 CROSS=$(RSDK_PREFIX)rsdk-linux- CC=cc
+	$(MAKE) ARCH=mips prefix2=_rtl819x$(prefix2) CFLAGS_ARCH=-march=5281 CROSS=$(RSDK_PREFIX)rsdk-linux- CC=cc
 
 .PHONY: x32
 x32:
