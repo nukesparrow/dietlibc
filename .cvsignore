@@ -30,4 +30,4 @@ pic-x86_64
 cycles
 include/errno_definition.h
 bin-x32
-dietfeatues.h
+dietfeatures.h
