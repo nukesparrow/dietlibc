@@ -1,9 +1,9 @@
 INSTALL=install
 
 ifeq ($(shell id -u),0)
-prefix?=/opt/diet
+prefix?=/opt/diet$(prefix2)
 else
-$(eval prefix?=$(shell echo $$HOME)/opt/diet)
+$(eval prefix?=$(shell echo $$HOME)/opt/diet$(prefix2))
 endif
 
 # Set the following to install to a different root
@@ -26,10 +26,8 @@ ARCH?=$(CC_ARCH)
 
 PIE=-fpie -fvisibility=hidden
 
-suffix?=-$(ARCH)
-
-OBJDIR=bin$(suffix)
-ILIBDIR=$(LIBDIR)$(suffix)
+OBJDIR=bin-$(ARCH)
+ILIBDIR=$(LIBDIR)-$(ARCH)
 
 $(eval DIETHOME=$(shell pwd))
 
@@ -112,7 +110,7 @@ $(eval PWD=$(shell pwd))
 .SUFFIXES: .S .c
 
 # added real dynamic dietlibc.so
-PICODIR = pic$(suffix)
+PICODIR = pic-$(ARCH)
 
 $(OBJDIR) $(PICODIR):
 	mkdir $@
