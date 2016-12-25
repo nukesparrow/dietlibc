@@ -275,10 +275,10 @@ $(PICODIR)/libm.so: $(DYN_LIBMATH_OBJS) dietfeatures.h $(PICODIR)/libc.so
 
 $(SYSCALLOBJ): syscalls.h
 
-$(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c $(OBJDIR)/diet
+$(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c
 	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
 
-$(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c $(OBJDIR)/diet
+$(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c
 	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
 	
 $(eval VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://'))
