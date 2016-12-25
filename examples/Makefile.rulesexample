@@ -1,0 +1,7 @@
+
+include dietrules.mk
+
+all: pi.diet pi
+
+clean:
+	$(RM) pi.diet
