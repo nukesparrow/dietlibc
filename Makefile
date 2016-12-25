@@ -39,12 +39,8 @@ WHAT=	$(OBJDIR) $(OBJDIR)/start.o $(OBJDIR)/dyn_start.o $(OBJDIR)/dyn_stop.o \
 	$(OBJDIR)/librpc.a $(OBJDIR)/libpthread.a \
 	$(OBJDIR)/libcrypt.a \
 	$(OBJDIR)/diet $(OBJDIR)/diet-i \
-
-ifeq ($(HOST_ARCH),$(CC_ARCH))
-WHAT +=
 	$(OBJDIR)/elftrunc \
 	$(OBJDIR)/dnsd
-endif
 
 all: $(WHAT)
 
@@ -279,23 +275,12 @@ $(PICODIR)/libm.so: $(DYN_LIBMATH_OBJS) dietfeatures.h $(PICODIR)/libc.so
 
 $(SYSCALLOBJ): syscalls.h
 
-$(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c bin-$(HOST_ARCH)/diet
-	bin-$(HOST_ARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
+$(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c $(OBJDIR)/diet
+	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
 
-$(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c bin-$(HOST_ARCH)/diet
-	bin-$(HOST_ARCH)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
+$(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c $(OBJDIR)/diet
+	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
 	
-bin-$(HOST_ARCH)/diet:
-ifeq ($(HOST_ARCH),$(HOST_CC_ARCH))
-	make ARCH=$(HOST_ARCH) CROSS= CC=$(HOST_CC)
-else
-ifeq ($(HOST_ARCH)-$(HOST_CC_ARCH),x86_64-i386)
-	make ARCH=$(HOST_ARCH) CROSS= CC="$(HOST_CC)" EXTRACFLAGS=-m64
-else
-	make $(HOST_ARCH)
-endif
-endif
-
 $(eval VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://'))
 $(eval CURNAME=$(notdir $(shell pwd)))
 
