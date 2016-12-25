@@ -48,6 +48,9 @@ profiling: $(OBJDIR)/libgmon.a $(OBJDIR)/pstart.o
 
 DEFAULTCFLAGS=-pipe -nostdinc -D_REENTRANT $(EXTRACFLAGS)
 CFLAGS=$(DEFAULTCFLAGS)
+ifneq ($(filter -WANT_SSP,$(FEATURES)),)
+CFLAGS+=-fno-stack-protector
+endif
 CROSS=
 
 CC=gcc
