@@ -290,7 +290,7 @@ ifeq ($(HOST_ARCH),$(HOST_CC_ARCH))
 	make ARCH=$(HOST_ARCH) CROSS= CC=$(HOST_CC)
 else
 ifeq ($(HOST_ARCH)-$(HOST_CC_ARCH),x86_64-i386)
-	make ARCH=$(HOST_ARCH) CROSS= "CC=$(HOST_CC) -m64"
+	make ARCH=$(HOST_ARCH) CROSS= CC="$(HOST_CC)" EXTRACFLAGS=-m64
 else
 	make $(HOST_ARCH)
 endif
