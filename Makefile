@@ -211,7 +211,7 @@ LD_UNSET = env -u LD_RUN_PATH
 dyn: dyn_lib
 
 # added dynamic linker
-$(OBJDIR)/libdl.a: $(LIBDLOBJ)
+$(OBJDIR)/libdl.a: $(LIBDLOBJ) dietfeatures.h
 	$(CROSS)ar cru $@ $(LIBDLOBJ)
 
 dyn_lib: $(PICODIR) $(PICODIR)/libc.so $(PICODIR)/dstart.o \
