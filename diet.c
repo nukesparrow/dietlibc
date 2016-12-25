@@ -353,6 +353,9 @@ pp:
 #ifdef WANT_DYNAMIC
       if (_link) { *dest++=d; }
 #endif
+#ifndef WANT_SSP
+      *dest++="-fno-stack-protector";
+#endif
       for (i=2; i<argc; ++i) {
 	if (!strcmp(argv[i],"-pthread")) {
 	  *dest++="-D_REENTRANT";
