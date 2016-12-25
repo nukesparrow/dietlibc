@@ -3,12 +3,6 @@
 
 #ifdef __ASSEMBLER__
 
-#if __mips == 1
-#error MIPS1 not supported
-#else
-#define REG_LI li
-#endif
-
 #if _MIPS_SIM == _ABI64
 
 #define PTR_LA    dla

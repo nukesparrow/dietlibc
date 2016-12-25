@@ -702,7 +702,7 @@ wsym: ; \
 .global sym; \
 .ent sym; \
 sym: \
-	REG_LI	$2,__NR_##name; \
+	li	$2,__NR_##name; \
 	syscall; \
 	PTR_LA	$25,__unified_syscall; \
 	jr	$25; \
@@ -713,7 +713,7 @@ sym: \
 .global sym; \
 .ent sym; \
 sym: \
-	REG_LI	$2,__NR_##name; \
+	li	$2,__NR_##name; \
 	syscall; \
 	PTR_LA	$25,__unified_syscall; \
 	jr	$25; \

@@ -9,20 +9,25 @@
 ifeq ($(CROSS),mips-linux-)
 ENDIAN=-meb
 endif
+
 ifeq ($(CC),gcc -mabi=64)
 CFLAGS+=$(ENDIAN) -Os
 else
 CFLAGS+=$(ENDIAN) -Os
 endif
 
-ifeq ($(CFLAGS_ARCH),)
+ifeq ($(MARCH),)
+
 ifeq ($(CC),gcc -mabi=64)
 CFLAGS+=-march=mips64
 else
 CFLAGS+=-march=mips2
 endif
+
 else
-CFLAGS+=$(CFLAGS_ARCH)
+
+CFLAGS+=$(MARCH)
+
 endif
 
 VPATH:=mips:syscalls.s:$(VPATH)
