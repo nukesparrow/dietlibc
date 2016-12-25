@@ -1,5 +1,11 @@
 INSTALL=install
+
+ifeq ($(shell id -u),0)
 prefix?=/opt/diet
+else
+$(eval prefix?=$(shell echo $$HOME)/opt/diet)
+endif
+
 # Set the following to install to a different root
 #DESTDIR=/tmp/fefix
 # Use "make DEBUG=1" to compile a debug version.
