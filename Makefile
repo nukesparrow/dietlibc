@@ -14,7 +14,7 @@ LIBDIR=${prefix}/lib
 BINDIR=${prefix}/bin
 MAN1DIR=${prefix}/man/man1
 
-EXTRACFLAGS=
+EXTRACFLAGS?=
 
 HOST_CC ?= cc
 
@@ -49,13 +49,13 @@ CFLAGS=$(DEFAULTCFLAGS)
 ifneq ($(filter -WANT_SSP,$(FEATURES)),)
 CFLAGS+=-fno-stack-protector
 endif
-CROSS=
+CROSS?=
 
 CC=gcc
 CCC=$(CROSS)$(CC)
 STRIP=$(COMMENT) $(CROSS)strip
-INC=-I. -isystem include
-#INC=-I. -Iinclude
+#INC=-I. -isystem include
+INC=-I. -Iinclude
 
 VPATH=lib:libstdio:libugly:libcruft:libcrypt:libshell:liblatin1:libcompat:libdl:librpc:libregex:libm:profiling
 
@@ -88,7 +88,7 @@ CFLAGS+=-O -fomit-frame-pointer
 endif
 
 ifneq ($(DEBUG),)
-CFLAGS = -g $(EXTRACFLAGS)
+CFLAGS += -g
 STRIP = :
 endif
 CFLAGS += -W -Wall -Wextra -Wchar-subscripts -Wmissing-prototypes -Wmissing-declarations -Wno-switch -Wno-unused -Wredundant-decls -Wshadow
@@ -277,10 +277,10 @@ $(PICODIR)/libm.so: $(DYN_LIBMATH_OBJS) dietfeatures.h $(PICODIR)/libc.so
 $(SYSCALLOBJ): syscalls.h
 
 $(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c
-	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
+	$(OBJDIR)/diet $(CCC) -nostdinc $(CFLAGS) -o $@ contrib/elftrunc.c
 
 $(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c
-	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
+	$(OBJDIR)/diet $(CCC) -nostdinc $(CFLAGS) -o $@ contrib/dnsd.c
 	
 $(eval VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://'))
 $(eval CURNAME=$(notdir $(shell pwd)))
