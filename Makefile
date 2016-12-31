@@ -44,8 +44,8 @@ all: $(WHAT)
 
 profiling: $(OBJDIR)/libgmon.a $(OBJDIR)/pstart.o
 
-DEFAULTCFLAGS=-pipe -nostdinc -D_REENTRANT $(EXTRACFLAGS)
-CFLAGS=$(DEFAULTCFLAGS)
+DEFAULTCFLAGS=-pipe $(EXTRACFLAGS)
+CFLAGS=-D_REENTRANT $(DEFAULTCFLAGS)
 ifneq ($(filter -WANT_SSP,$(FEATURES)),)
 CFLAGS+=-fno-stack-protector
 endif
@@ -54,7 +54,7 @@ CROSS=
 CC=gcc
 CCC=$(CROSS)$(CC)
 STRIP=$(COMMENT) $(CROSS)strip
-INC=-I. -isystem include
+INC=-nostdinc -I. -isystem include
 #INC=-I. -Iinclude
 
 VPATH=lib:libstdio:libugly:libcruft:libcrypt:libshell:liblatin1:libcompat:libdl:librpc:libregex:libm:profiling
@@ -277,10 +277,10 @@ $(PICODIR)/libm.so: $(DYN_LIBMATH_OBJS) dietfeatures.h $(PICODIR)/libc.so
 $(SYSCALLOBJ): syscalls.h
 
 $(OBJDIR)/elftrunc: $(OBJDIR)/diet contrib/elftrunc.c
-	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/elftrunc.c
+	$(OBJDIR)/diet $(CCC) $(INC) $(CFLAGS) -o $@ contrib/elftrunc.c
 
 $(OBJDIR)/dnsd: $(OBJDIR)/diet contrib/dnsd.c
-	$(OBJDIR)/diet $(CCC) $(CFLAGS) -o $@ contrib/dnsd.c
+	$(OBJDIR)/diet $(CCC) $(INC) $(CFLAGS) -o $@ contrib/dnsd.c
 	
 $(eval VERSION=dietlibc-$(shell head -n 1 CHANGES|sed 's/://'))
 $(eval CURNAME=$(notdir $(shell pwd)))
